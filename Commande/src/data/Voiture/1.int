@@ -1,0 +1,1017 @@
+ROUTINE data.Voiture.1 [Type=INT,Generated]
+ ;data.Voiture.1
+ ;Generated for class data.Voiture.  Do NOT edit. 11/14/2021 06:58:16PM
+ ;;56436B53;data.Voiture
+ ;
+SQLUPPER(v,l) { quit $zu(28,v,7,$g(l,32767)) }
+ALPHAUP(v,r) { quit $zu(28,v,6) }
+STRING(v,l) { quit $zu(28,v,9,$g(l,32767)) }
+SQLSTRING(v,l) { quit $zu(28,v,8,$g(l,32767)) }
+UPPER(v) { quit $zu(28,v,5) }
+MVR(v) { quit $zu(28,v,2) }
+TRUNCATE(v,l) { quit $e(v,1,$g(l,3641144)) }
+%BuildDeferredIndices(lockFlag=0,journalFlag=1) public {
+	return $$Error^%apiOBJ(5758,"%Storage.Persistent::%BuildDeferredIndices") }
+%BuildIndices(pIndexList="",pAutoPurge=1,pLockFlag=0,pJournalFlag="",pStartID="",pEndID="",pIgnoreIndexList="") public {
+	if ($listlength(pIndexList)=1)&&($listget(pIndexList,1)="") { return 1 }
+	Set class=$classname(),tBuildFlags=1,tBuildFlags(class)=$c(0)
+	Set tPtr=0,tStatus=1
+	While $listnext(pIndexList,tPtr,tIndex) {
+		continue:tIndex=""
+		If '$d(^oddCOM(class,"i",tIndex)) {
+			Set tStatus=$select(+tStatus:$$Error^%apiOBJ(5066,class_"::"_tIndex),1:$$AppendStatus^%occSystem(tStatus,$$Error^%apiOBJ(5066,class_"::"_tIndex)))
+		}
+	}
+	If ('tStatus) RETURN tStatus
+	if ((pIndexList="")||($listfind(pIndexList,"consulterParPlaque"))),'$listfind(pIgnoreIndexList,"consulterParPlaque") { set $Extract(tBuildFlags(class),1)=$c(1) }
+	Quit ..%BuildIndexInternal(.pLockFlag,.pAutoPurge,.pStartID,.pEndID,.pIndexList,.tBuildFlags,"^data.VoitureD",0,.pJournalFlag,0) }
+%BuildIndicesSegment(pStartID,pEndID,pIndexHandle=0,pLockFlag=1,pFirstRange=0,pJob="") public {
+	New %tIndexBuffer
+	Try {
+		set tStatus=1,tLocked=0
+		If pLockFlag'=2,$Ascii(pIndexHandle($classname()),1),$SortBegin(^data.VoitureI("consulterParPlaque")),$increment(^IRIS.TempIndexBuild(pJob,1)) { Do $system.Event.Create($name(^IRIS.TempIndexBuild(pJob,1))) }
+		Set tPrefetch=$prefetchon(^data.VoitureD)
+		If 'pFirstRange||('$data(^data.VoitureD(pStartID))) { Set tID=$order(^data.VoitureD(pStartID)) } Else { Set tID=pStartID }
+		While tID'="",(pEndID="")||(tID']]pEndID) {
+			If pLockFlag=2 {
+				Set tSC = ..%LockId(tID,1)
+				If ('tSC) {
+					Set tStatus=$select(+tStatus:tSC,1:$$AppendStatus^%occSystem(tStatus,tSC))
+					Set tID=$order(^data.VoitureD(tID))
+					Continue
+				}
+			}
+			If pLockFlag'=2||($data(^data.VoitureD(tID))) {
+				Set tSC=..%FileIndices(tID,.pIndexHandle)
+				If ('tSC) { Set tStatus=$select(+tStatus:tSC,1:$$AppendStatus^%occSystem(tStatus,tSC)) }
+			}
+			Do:pLockFlag=2 ..%UnlockId(tID,1,1)
+			set tID=$order(^data.VoitureD(tID))
+		}
+	}
+	Catch tException {
+		Set tSC=tException.AsStatus(),tStatus=$select(+tStatus:tSC,1:$$AppendStatus^%occSystem(tStatus,tSC))
+	}
+	If pLockFlag'=2,$Ascii(pIndexHandle($classname()),1) {
+		If $increment(^IRIS.TempIndexBuild(pJob,1),-1)=0 { Do $system.Event.Delete($name(^IRIS.TempIndexBuild(pJob,1))) } Else { Try { Do $system.Event.Wait($name(^IRIS.TempIndexBuild(pJob,1))) } Catch {} }
+		If $SortEnd(^data.VoitureI("consulterParPlaque")) {}
+	}
+	Set:$Get(tPrefetch) tPrefetch=$prefetchoff(^data.VoitureD)
+	Quit tStatus }
+%CheckConstraints(pID,pConstraintList="",pCheckDisabled=0,pErrorInfo) public {
+	if (''..%OnDetermineClass($select(pID="":"",1:$listbuild(pID_"")),.tMSTC)) && (tMSTC '= $classname()) { quit $classmethod(tMSTC,"%CheckConstraints",pID,pConstraintList) } else { quit 1 } }
+%CheckConstraintsForExtent(pConstraintList="",pCheckDisabled=0,pErrorLog) [ SQLCODE,tID ] public { New %ROWCOUNT,%ROWID,%msg,SQLCODE,tID 
+	kill pErrorLog set tStatusAll = 1, pErrorLog = 0 if '$listvalid(pConstraintList) { set pConstraintList = $listfromstring(pConstraintList) }
+	 ;---&sql(declare ext cursor for select %ID into :tID FROM data.Voiture)
+ 	 ;--- ** SQL PUBLIC Variables: SQLCODE, tID
+	 
+	 ;---&sql(open ext)
+	try { if $g(%ext02)'="" { s SQLCODE=-101 } else { s %ext02=$classmethod("%sqlcq."_$tr($namespace,"%_-$@:/\[]^ ","pudsssssssss")_".xEmDpidm0LGfSAURwW6cPA49NwF5","%New") if '$isobject(%ext02) { s %ext02=$$%0dsqlA() } } } catch { if $ze["<CLASS DOES NOT EXIST>"&&($ze["%sqlcq."_$tr($namespace,"%_-$@:/\[]^ ","pudsssssssss")_".xEmDpidm0LGfSAURwW6cPA49NwF5")||($ze["<ZSQLU>") { s %ext02=$$%0dsqlA() } else { throw } }
+	if SQLCODE '< 0 {
+		for {
+			 ;---&sql(fetch ext)
+ 			 ;--- ** SQL PUBLIC Variables: %ROWCOUNT, %ROWID, %msg, SQLCODE
+			if $isobject($g(%ext02))'=1 { s SQLCODE=-102 } else { do %ext02.FET() }
+			if SQLCODE { if SQLCODE=100 { quit } elseif SQLCODE<0 { set tStatusAll = $select(+tStatusAll:$$Error^%apiOBJ(5521,SQLCODE,$Get(%msg)),1:$$AppendStatus^%occSystem(tStatusAll,$$Error^%apiOBJ(5521,SQLCODE,$Get(%msg)))) quit } }
+			set tStatus = ..%CheckConstraints(tID,pConstraintList,pCheckDisabled,.tErrorInfo)
+			if ('tStatus) { set tStatusAll = $select(+tStatusAll:tStatus,1:$$AppendStatus^%occSystem(tStatusAll,tStatus)) set:pErrorLog<1000 pErrorLog = pErrorLog + 1, pErrorLog(pErrorLog) = tErrorInfo _ $Listbuild(tStatus) }
+		}
+		 ;---&sql(close ext)
+		if '$isobject($get(%ext02)) { set SQLCODE=-102 } else { set SQLCODE=0 kill %ext02 }
+	}
+	quit tStatusAll }
+ q
+%0dsqlA()	n %xxsql,%xxoref
+	s %xxsql("S",1)="DECLARE ext CURSOR FOR SELECT %ID INTO :tID FROM data . Voiture"
+	s %xxsql("M","%occSqlfuncinc")=$c(1),%xxsql("I","%PVA")="",%xxsql("I","%callout")="",%xxsql("I","%jsonMap")="",%xxsql("I","%occSqlfunc")=""
+	s %xxsql("I","%systemInclude")="",%xxsql("NS")="COMMANDE",%xxsql("PToolsCTI")=$LB(,"-1:0:0::0:1")
+	s %xxoref=$$BuildQuery^%SYS.SQLSRV(.%xxsql,$lb("Logical","","","data",0,"",),",0,ext,","data.Voiture.CLS",1)
+	i $g(SQLCODE) s tID=""
+	q %xxoref
+%ComposeOid(id) public {
+	set tCLASSNAME = $listget($g(^data.VoitureD(id)),1)
+	if tCLASSNAME="" { quit $select(id="":"",1:$listbuild(id_"","data.Voiture")) }
+	set tClass=$piece(tCLASSNAME,$extract(tCLASSNAME),*-1)
+	set:tClass'["." tClass="User."_tClass
+	quit $select(id="":"",1:$listbuild(id_"",tClass)) }
+%DeleteData(id,concurrency) public {
+	Quit:id="" $$Error^%apiOBJ(5812)
+	set $Ztrap="DeleteDataERR" set lockok=0,sc=""
+	If concurrency {
+		Lock +(^data.VoitureD(id)#"E"):$zu(115,4)
+		Set lockok=$s('$t:0,1:$case($SYSTEM.Lock.ReturnCode(),0:1,2:2,4:2,:0))
+		Set:lockok=2&&($tlevel) %0CacheLock($classname(),"E")=1
+		If 'lockok {
+			Quit $$Error^%apiOBJ(5803,$classname())
+		}
+	}
+	If ($Data(^data.VoitureD(id))) {
+		Set bsv0N1=^data.VoitureD(id)
+		If $data(^oddEXTR($classname())) {
+			Set fc=""
+			For {
+				Set fc=$order(^rINDEXEXT("F",$classname(),"%1","f",fc))
+				Quit:fc=""
+				Set fk=""
+				For {
+					Set fk=$order(^rINDEXEXT("F",$classname(),"%1","f",fc,fk))
+					Quit:fk=""
+					Set sc=$classmethod(fc,fk_"Delete",id)
+					If ('sc) { Goto DeleteDataEXIT }
+				}
+			}
+			Set fc=""
+			For {
+				Set fc=$order(^rINDEXEXT("F",$classname(),"IDKEY","f",fc))
+				Quit:fc=""
+				Set fk=""
+				For {
+					Set fk=$order(^rINDEXEXT("F",$classname(),"IDKEY","f",fc,fk))
+					Quit:fk=""
+					Set sc=$classmethod(fc,fk_"Delete",id)
+					If ('sc) { Goto DeleteDataEXIT }
+				}
+			}
+		}
+		Kill ^data.VoitureI("consulterParPlaque",$zu(28,$listget(bsv0N1,5),7,32768),id)
+		Kill ^data.VoitureD(id)
+		Set sc=1
+	}
+	Else { Set sc=$$Error^%apiOBJ(5810,$classname(),id) }
+DeleteDataEXIT
+	If concurrency,lockok {
+		Lock -(^data.VoitureD(id)#"E")
+	}
+DeleteDataRET	Set $Ztrap = ""
+	QUIT sc
+DeleteDataERR	Set $Ztrap = "DeleteDataRET"
+	Set sc = $$Error^%apiOBJ(5002,$ZE)
+	Goto DeleteDataEXIT }
+%Exists(oid="") public {
+	Quit ..%ExistsId($listget(oid)) }
+%ExistsId(id) public {
+	Try { set tExists = $s(id="":0,$d(^data.VoitureD(id)):1,1:0) } catch tException { set tExists = 0 if '(tException.%IsA("%Exception.SystemException")) { throw tException } elseif tException.Name'="<SUBSCRIPT>" { ZT $ZE } } quit tExists }
+%FileIndices(id,pIndexHandle=0) public {
+	Set $ZTrap="CatchError",sc=1
+	Set bsv0N2=$Get(^data.VoitureD(id))
+	Set bsv0N3=$listget(bsv0N2,1)
+	If bsv0N3'="" {
+		Set bsv0N1=$piece(bsv0N3,$extract(bsv0N3),*-1)
+		Set:bsv0N1'["." bsv0N1="User."_bsv0N1
+		If bsv0N1'="" {
+			Quit $classmethod(bsv0N1,"%FileIndices",id,.pIndexHandle)
+		}
+	}
+	If ('pIndexHandle)||($Ascii($Get(pIndexHandle("data.Voiture")),1)=1) {
+		Set bsv0N4=$zu(28,$listget(bsv0N2,5),7,32768)
+		Set ^data.VoitureI("consulterParPlaque",bsv0N4,id)=$listget(bsv0N2,1)
+	}
+	QUIT 1
+CatchError	s $ZTrap="" i $ZE'="" { s sc = $$Error^%apiOBJ(5002,$ZE) } q sc }
+%InsertBatch(objects,concurrency=0,useTransactions=0) public {
+	try {
+		set numerrs=0,errs="",cnt=0,ptr=0
+		while $listnext(objects,ptr,data) {
+			set cnt=cnt+1
+			set lock=0
+			if (useTransactions) tstart
+			set id=$i(^data.VoitureD)
+			try {
+				set tInnerException = ""
+				;
+				if concurrency { lock +(^data.VoitureD(id)#"E"):$zu(115,4) set lock=$s('$t:0,1:$case($SYSTEM.Lock.ReturnCode(),0:1,2:2,4:2,:0)) set:lock=2&&($tlevel) %0CacheLock($classname(),"E")=1 if 'lock { Throw ##class(%Exception.StatusException).ThrowIfInterrupt($$Error^%apiOBJ(5803,$classname())) } }
+				set ^data.VoitureD(id)=data
+				set ^data.VoitureI("consulterParPlaque",$zu(28,$listget(data,5),7,32768),id)=$listget(data,1)
+				if (useTransactions) { tcommit }
+			}
+			catch tInnerException {
+				set newerr=$lb(cnt,tInnerException.AsStatus())
+				if '($length(errs)+$length(newerr)>32767) { set numerrs=numerrs+1, errs=errs_newerr }
+				if (useTransactions) && ($Tlevel) trollback
+			}
+			if lock lock -(^data.VoitureD(id)#"E")
+		}
+	}
+	catch tException {
+		set newerr=$lb($g(cnt),tException.AsStatus())
+		if '($length(errs)+$length(newerr)>32767) { set numerrs=numerrs+1, errs=errs_newerr }
+	}
+	QUIT ($lb(numerrs))_errs }
+%JSONExportInternal() public {
+  Set sc=1
+  Write "{" Set sep=""
+  Set value=..marque
+  If value'="" {
+    Write sep_"""marque"":"""_$select((value=$c(0)):"",1:$zcvt(value,"O","JSON"))_""""
+    Set $extract(sep,1)=","
+  }
+  Set value=..modele
+  If value'="" {
+    Write sep_"""modele"":"""_$select((value=$c(0)):"",1:$zcvt(value,"O","JSON"))_""""
+    Set $extract(sep,1)=","
+  }
+  Set value=..categorie
+  If value'="" {
+    Write sep_"""categorie"":"""_$select((value=$c(0)):"",1:$zcvt(value,"O","JSON"))_""""
+    Set $extract(sep,1)=","
+  }
+  Set value=..plaque
+  If value'="" {
+    Write sep_"""plaque"":"""_$select((value=$c(0)):"",1:$zcvt(value,"O","JSON"))_""""
+    Set $extract(sep,1)=","
+  }
+  Set value=..couleur
+  If value'="" {
+    Write sep_"""couleur"":"""_$select((value=$c(0)):"",1:$zcvt(value,"O","JSON"))_""""
+    Set $extract(sep,1)=","
+  }
+  Set value=..nbPlaces
+  If value'="" {
+    Write sep_"""nbPlaces"":"_value
+    Set $extract(sep,1)=","
+  }
+  Write "}"
+%JSONExportExit Quit sc }
+%JSONExportToStringInternal() public {
+  Set sc=1
+  Set %export=%export_"{" Set sep=""
+  Set value=..marque
+  If value'="" {
+    Set %export=%export_sep_"""marque"":"""_$select((value=$c(0)):"",1:$zcvt(value,"O","JSON"))_""""
+    Set $extract(sep,1)=","
+  }
+  Set value=..modele
+  If value'="" {
+    Set %export=%export_sep_"""modele"":"""_$select((value=$c(0)):"",1:$zcvt(value,"O","JSON"))_""""
+    Set $extract(sep,1)=","
+  }
+  Set value=..categorie
+  If value'="" {
+    Set %export=%export_sep_"""categorie"":"""_$select((value=$c(0)):"",1:$zcvt(value,"O","JSON"))_""""
+    Set $extract(sep,1)=","
+  }
+  Set value=..plaque
+  If value'="" {
+    Set %export=%export_sep_"""plaque"":"""_$select((value=$c(0)):"",1:$zcvt(value,"O","JSON"))_""""
+    Set $extract(sep,1)=","
+  }
+  Set value=..couleur
+  If value'="" {
+    Set %export=%export_sep_"""couleur"":"""_$select((value=$c(0)):"",1:$zcvt(value,"O","JSON"))_""""
+    Set $extract(sep,1)=","
+  }
+  Set value=..nbPlaces
+  If value'="" {
+    Set %export=%export_sep_"""nbPlaces"":"_value
+    Set $extract(sep,1)=","
+  }
+  Set %export=%export_"}"
+%JSONExportExitToString Quit sc }
+%JSONImportInternal() public {
+  Set sc=1
+  Set testInvalidField=1
+  Set proplist("marque")=""
+  Set field="marque" Set jsontype=$CASE(%JSONObject.%GetTypeCodeOf(field),0:"null",1:"boolean",2:"boolean",3:"number",4:"number",6:"array",7:"object",8:"string",9:"number",10:"illegalvalue",11:"number",12:"oref",13:"unassigned",14:"number",15:"number",16:"string",18:"number",19:"number",20:"string",31:"unassigned",:"UNKNOWN")
+  If jsontype'="unassigned" {
+    If jsontype="null" {
+      Set ..marque=""
+    } Else {
+      If jsontype'="string" Goto %JSONImportError
+      Set data=%JSONObject.marque
+      If ('$s(($l(data)'>50):1,1:$$Error^%apiOBJ(7201,data,50))) Goto %JSONImportError
+      If data="" Set data=$c(0)
+      Set ..marque=data
+    }
+  }
+  Set proplist("modele")=""
+  Set field="modele" Set jsontype=$CASE(%JSONObject.%GetTypeCodeOf(field),0:"null",1:"boolean",2:"boolean",3:"number",4:"number",6:"array",7:"object",8:"string",9:"number",10:"illegalvalue",11:"number",12:"oref",13:"unassigned",14:"number",15:"number",16:"string",18:"number",19:"number",20:"string",31:"unassigned",:"UNKNOWN")
+  If jsontype'="unassigned" {
+    If jsontype="null" {
+      Set ..modele=""
+    } Else {
+      If jsontype'="string" Goto %JSONImportError
+      Set data=%JSONObject.modele
+      If ('$s(($l(data)'>50):1,1:$$Error^%apiOBJ(7201,data,50))) Goto %JSONImportError
+      If data="" Set data=$c(0)
+      Set ..modele=data
+    }
+  }
+  Set proplist("categorie")=""
+  Set field="categorie" Set jsontype=$CASE(%JSONObject.%GetTypeCodeOf(field),0:"null",1:"boolean",2:"boolean",3:"number",4:"number",6:"array",7:"object",8:"string",9:"number",10:"illegalvalue",11:"number",12:"oref",13:"unassigned",14:"number",15:"number",16:"string",18:"number",19:"number",20:"string",31:"unassigned",:"UNKNOWN")
+  If jsontype'="unassigned" {
+    If jsontype="null" {
+      Set ..categorie=""
+    } Else {
+      If jsontype'="string" Goto %JSONImportError
+      Set data=%JSONObject.categorie
+      If ('$s(data'["'"&&("'2 places', 'Cabriolet', 'Berline', 'Monospace', '4x4', '7 places''"[("'"_$select(data=$c(0):"",1:data)_"'")):1,1:$$Error^%apiOBJ(7205,data,"'2 places', 'Cabriolet', 'Berline', 'Monospace', '4x4', '7 places'"))) Goto %JSONImportError
+      If data="" Set data=$c(0)
+      Set ..categorie=data
+    }
+  }
+  Set proplist("plaque")=""
+  Set field="plaque" Set jsontype=$CASE(%JSONObject.%GetTypeCodeOf(field),0:"null",1:"boolean",2:"boolean",3:"number",4:"number",6:"array",7:"object",8:"string",9:"number",10:"illegalvalue",11:"number",12:"oref",13:"unassigned",14:"number",15:"number",16:"string",18:"number",19:"number",20:"string",31:"unassigned",:"UNKNOWN")
+  If jsontype'="unassigned" {
+    If jsontype="null" {
+      Set ..plaque=""
+    } Else {
+      If jsontype'="string" Goto %JSONImportError
+      Set data=%JSONObject.plaque
+      If ('$s(($s(data'=$c(0):$l(data),1:0)'<9)&&($l(data)'>9):1,$s(data'=$c(0):$l(data),1:0)<9:$$Error^%apiOBJ(7202,data,9),1:$$Error^%apiOBJ(7201,data,9))) Goto %JSONImportError
+      If data="" Set data=$c(0)
+      Set ..plaque=data
+    }
+  }
+  Set proplist("couleur")=""
+  Set field="couleur" Set jsontype=$CASE(%JSONObject.%GetTypeCodeOf(field),0:"null",1:"boolean",2:"boolean",3:"number",4:"number",6:"array",7:"object",8:"string",9:"number",10:"illegalvalue",11:"number",12:"oref",13:"unassigned",14:"number",15:"number",16:"string",18:"number",19:"number",20:"string",31:"unassigned",:"UNKNOWN")
+  If jsontype'="unassigned" {
+    If jsontype="null" {
+      Set ..couleur=""
+    } Else {
+      If jsontype'="string" Goto %JSONImportError
+      Set data=%JSONObject.couleur
+      If ('$s(($l(data)'>50):1,1:$$Error^%apiOBJ(7201,data,50))) Goto %JSONImportError
+      If data="" Set data=$c(0)
+      Set ..couleur=data
+    }
+  }
+  Set proplist("nbPlaces")=""
+  Set field="nbPlaces" Set jsontype=$CASE(%JSONObject.%GetTypeCodeOf(field),0:"null",1:"boolean",2:"boolean",3:"number",4:"number",6:"array",7:"object",8:"string",9:"number",10:"illegalvalue",11:"number",12:"oref",13:"unassigned",14:"number",15:"number",16:"string",18:"number",19:"number",20:"string",31:"unassigned",:"UNKNOWN")
+  If jsontype'="unassigned" {
+    If jsontype="null" {
+      Set ..nbPlaces=""
+    } Else {
+      If jsontype'="number" Goto %JSONImportError
+      Set data=%JSONObject.nbPlaces
+      Set data=$s($tr(data,"Ee(),.")'=data:"",1:$number(data,"I")) Goto:data="" %JSONImportError If ('$select(data=$c(0)&&$zu(115,13):1,$isvalidnum(data,0):1,1:$$Error^%apiOBJ(7207,data))) Goto %JSONImportError
+      Set ..nbPlaces=data
+    }
+  }
+  If $get(testInvalidField) {
+    Set invalid=0,iterator=%JSONObject.%GetIterator()
+    While iterator.%GetNext(.key,.value) { If $data(proplist(key))=0 Set invalid=1 Quit  }
+    If invalid Quit $$Error^%apiOBJ(9404,key,$select(%mappingName="":"class base",1:%mappingName))
+  }
+%JSONImportExit Quit sc
+%JSONImportError Quit $$Error^%apiOBJ(9406,field,$select(%mappingName="":"class base",1:%mappingName)) }
+%JSONNew(dynamicObject,containerOref="") public {
+  Quit ##class(data.Voiture).%New()
+}
+%KillExtentData(killstreams=0)
+	Set $sequence(^data.VoitureD)=""
+	If killstreams Kill ^data.VoitureS
+	Kill ^data.VoitureD
+	Quit 1
+%LoadData(id) public {
+	New %s1
+	set $ZTrap="CatchError",locked=0,userze=$ze,$ze=""
+	If i%%Concurrency=4 {
+		Lock +(^data.VoitureD(id)#"E"):$zu(115,4)
+		if '$t do init s i%%Concurrency=0 s:$ze="" $ze=userze return $$Error^%apiOBJ(5803,$classname())
+	} ElseIf i%%Concurrency>1 {
+		Lock +(^data.VoitureD(id)#"SE"):$zu(115,4)
+		if '$t do init s i%%Concurrency=0 s:$ze="" $ze=userze return $$Error^%apiOBJ(5804,$classname())
+		set locked = 1
+	}
+	If $d(^data.VoitureD(id),%s1)#2 {
+		If i%%Concurrency=2 { Lock -(^data.VoitureD(id)#"SIE") }
+		S i%marque=$lg(%s1,2),i%modele=$lg(%s1,3),i%plaque=$lg(%s1,5),i%couleur=$lg(%s1,6),i%nbPlaces=$lg(%s1,7),i%categorie=$lg(%s1,8)
+		s:$ze="" $ze=userze
+		Quit 1
+	} Else {
+		If i%%Concurrency=2 { Lock -(^data.VoitureD(id)#"SIE") }
+		do init
+		set sc = $$Error^%apiOBJ(5809,$classname(),id) goto CatchError
+	}
+CatchError	set $ZTrap = "" if $ZE'="" { s sc = $$Error^%apiOBJ(5002,$ZE) }
+	If ($get(locked))&&(i%%Concurrency<3) { Lock -(^data.VoitureD(id)#"SIE") }
+	if '('sc) { set sc=$$Error^%apiOBJ(5809,$classname(),id) }
+	s:$ze="" $ze=userze
+	return sc
+init	Set i%categorie="",i%couleur="",i%marque="",i%modele="",i%nbPlaces="",i%plaque=""
+	quit }
+%LoadDataFromMemory(id,objstate,obj) public {
+	New %s1
+	If $d(objstate(id)) {
+		Set %s1=$g(objstate(id))
+		S i%marque=$lg(%s1,2),i%modele=$lg(%s1,3),i%plaque=$lg(%s1,5),i%couleur=$lg(%s1,6),i%nbPlaces=$lg(%s1,7),i%categorie=$lg(%s1,8)
+		Quit 1
+	} Else {
+		Set i%categorie="",i%couleur="",i%marque="",i%modele="",i%nbPlaces="",i%plaque=""
+		Quit $$Error^%apiOBJ(5809,$classname(),id)
+	} }
+%LockExtent(shared=0) public {
+	If shared {
+		Lock +(^data.VoitureD#"S"):$zu(115,4) Quit:$t 1
+		Quit $$Error^%apiOBJ(5799,$classname())
+	}
+	Lock +(^data.VoitureD):$zu(115,4) Quit:$t 1
+	Quit $$Error^%apiOBJ(5798,$classname()) }
+%LockId(id,shared=0,timeout) public { s:'($d(timeout)#2) timeout=$zu(115,4)
+	If id="" { Quit $$Error^%apiOBJ(5812) }
+	Set sc=1
+	If 'shared {
+		Lock +(^data.VoitureD(id)#"E"):timeout Quit:$t 1
+		Quit $$Error^%apiOBJ(5803,id_":"_$classname())
+	}
+	Lock +(^data.VoitureD(id)#"SE"):timeout Quit:$t 1
+	Quit $$Error^%apiOBJ(5804,id_":"_$classname()) }
+%NormalizeObject() public {
+	If '$system.CLS.GetModified() Quit 1
+	If m%categorie Set:i%categorie'="" i%categorie=(..categorieNormalize(i%categorie))
+	If m%couleur Set:i%couleur'="" i%couleur=(..couleurNormalize(i%couleur))
+	If m%marque Set:i%marque'="" i%marque=(..marqueNormalize(i%marque))
+	If m%modele Set:i%modele'="" i%modele=(..modeleNormalize(i%modele))
+	If m%nbPlaces Set:i%nbPlaces'="" i%nbPlaces=(..nbPlacesNormalize(i%nbPlaces))
+	If m%plaque Set:i%plaque'="" i%plaque=(..plaqueNormalize(i%plaque))
+	Quit 1 }
+%OnDetermineClass(oid,class) public {
+	Set id=$listget($get(oid))
+	Quit:id="" $$Error^%apiOBJ(5812)
+	Set idclass=$lg($get(^data.VoitureD(id)),1)
+	If idclass="" { Set class="data.Voiture" Quit 1 }
+	Set class=$piece(idclass,$extract(idclass),*-1)
+	Set:class'["." class="User."_class
+	QUIT 1 }
+%PhysicalAddress(id,paddr)
+	if $Get(id)="" Quit $$Error^%apiOBJ(5813,$classname())
+	if (id="") { quit $$Error^%apiOBJ(5832,$classname(),id) }
+	s paddr(1)=$lb($Name(^data.VoitureD(id)),$classname(),"IDKEY","listnode",id)
+	s paddr=1
+	Quit 1
+%PurgeIndices(idxlist="",lockExtent=0,pIgnoreIndexList="") public {
+	Set locked=0,sc=1
+	Try {
+		if ($listlength(idxlist)=1)&&($listget(idxlist,1)="") { return 1 }
+		Set tPtr=0
+		While $listnext(idxlist,tPtr,tIndex) {
+			continue:tIndex=""
+			If '($d(^oddCOM($classname(),"i",tIndex))) {
+				Set sc=$select(+sc:$$Error^%apiOBJ(5066,$classname()_"::"_tIndex),1:$$AppendStatus^%occSystem(sc,$$Error^%apiOBJ(5066,$classname()_"::"_tIndex)))
+			}
+		}
+		If ('sc) { Return sc }
+		If lockExtent {
+			Set sc=..%LockExtent(0)
+			If ('sc) { Return sc }
+			Set locked=1
+		}
+		If $system.CLS.IsMthd("%OnBeforePurgeIndices") {
+			Set sc=..%OnBeforePurgeIndices(.idxlist)
+			If (('sc))||(($listlength(idxlist)=1)&&($listget(idxlist,1)="")) {
+				If locked {
+					Do ..%SQLReleaseTableLock(0)
+				}
+				Return sc
+			}
+		}
+		if ((idxlist="")||($listfind(idxlist,"consulterParPlaque"))),'$listfind(pIgnoreIndexList,"consulterParPlaque") {
+			kill ^data.VoitureI("consulterParPlaque")
+		}
+		Set sc=1
+		If $system.CLS.IsMthd("%OnAfterPurgeIndices") { Set sc=..%OnAfterPurgeIndices(.idxlist) }
+	} Catch tException {
+		Set sc=tException.AsStatus(),$ZE=""
+	}
+	If locked { Do ..%UnlockExtent(0) }
+	Quit sc }
+%SQLAcquireLock(%rowid,s=0,unlockref=0)
+	new %d,gotlock
+	set %d(1)=%rowid set s=$e("E",'unlockref)_$e("S",s)
+	lock +^data.VoitureD(%d(1))#s:$zu(115,4) set gotlock=$t
+	if gotlock,'unlockref { set:$case($SYSTEM.Lock.ReturnCode(),2:1,4:1,:0)&&($tlevel) %0CacheLock("data.Voiture","E")=1 }
+	set:gotlock&&unlockref unlockref=unlockref+1,unlockref(unlockref)=$lb($name(^data.VoitureD(%d(1))),"data.Voiture",s_"D")
+	QUIT gotlock
+%SQLAcquireTableLock(s=0,SQLCODE,to="")
+	set s=$e("S",s) set:to="" to=$zu(115,4) lock +^data.VoitureD#s:to QUIT:$t 1 set SQLCODE=-110 if s="S" { set %msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler35",,"data"_"."_"Voiture") } else { set %msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler36",,"data"_"."_"Voiture") } QUIT 0
+	Return
+%SQLBuildIndices(pIndices="",pLockFlag=0,pStartID="",pEndID="",pIgnoreIndexList="")
+	QUIT ..%BuildIndices(pIndices,,pLockFlag,,pStartID,pEndID,pIgnoreIndexList)
+%SQLBuildPurgeIndexForRow(pIndices="",pActions="BP",pLockRow=1,%d,%e,pIgnoreIndexList="")
+	// Purge and build index nodes for a single row using given values, return Status Code
+	new sn,tSC,tLock set tSC=1,pActions=$zcvt(pActions,"U")
+	try {
+		if $g(%d(1))="" { set tSC=$select(+tSC:$$Error^%apiOBJ(5521,-108,"RowID value must be specified in %d(1) when calling %SQLBuildPurgeIndexForRow for table 'data.Voiture'"),1:$$AppendStatus^%occSystem(tSC,$$Error^%apiOBJ(5521,-108,"RowID value must be specified in %d(1) when calling %SQLBuildPurgeIndexForRow for table 'data.Voiture'"))) RETURN tSC }
+		if pLockRow { if '..%SQLAcquireLock(%d(1)) { set tSC=$select(+tSC:$$Error^%apiOBJ(5521,-114,"Unable to lock row in table 'data.Voiture' with %ID = '"_%d(1)_"'"),1:$$AppendStatus^%occSystem(tSC,$$Error^%apiOBJ(5521,-114,"Unable to lock row in table 'data.Voiture' with %ID = '"_%d(1)_"'"))) RETURN tSC  } else { set tLock=1 }}
+		if ((pIndices="")||($lf(pIndices,"consulterParPlaque"))),'$listfind(pIgnoreIndexList,"consulterParPlaque") {
+			if pActions["P" {
+				set sn(1)=$zu(28,%e(7),7) set sn(2)=%d(1) k ^data.VoitureI("consulterParPlaque",sn(1),sn(2))
+			}
+			if pActions["B" {
+				set sn(1)=$zu(28,%d(7),7) set sn(2)=%d(1) set ^data.VoitureI("consulterParPlaque",sn(1),sn(2))=%d(8)
+			}
+		}
+		if pLockRow { do ..%SQLReleaseLock(%d(1),0,0) set tLock=0 }
+	}
+	catch {
+		if $g(tLock) { do ..%SQLReleaseLock(%d(1),0,0) }
+		set tSC=$select(+tSC:$$Error^%apiOBJ(5594,$ze),1:$$AppendStatus^%occSystem(tSC,$$Error^%apiOBJ(5594,$ze)))
+	}
+	QUIT tSC
+%SQLCheckUniqueIndices(pIndices,pOK)
+	new d,g,n,o set d=0
+	set pOK=1 QUIT
+%SQLCopyIcolIntoName()
+	if %oper="DELETE" {
+		set:$d(%d(1)) %f("ID")=%d(1)
+		QUIT
+	}
+	set:$d(%d(1)) %f("ID")=%d(1) set:$a(%e,2)&&$d(%d(2)) %f("categorie")=%d(2) set:$a(%e,3)&&$d(%d(3)) %f("couleur")=%d(3) set:$a(%e,4)&&$d(%d(4)) %f("marque")=%d(4) set:$a(%e,5)&&$d(%d(5)) %f("modele")=%d(5) set:$a(%e,6)&&$d(%d(6)) %f("nbPlaces")=%d(6) set:$a(%e,7)&&$d(%d(7)) %f("plaque")=%d(7) set:$a(%e,8)&&$d(%d(8)) %f("x__classname")=%d(8)
+	QUIT
+%SQLDefineiDjVars(%d,subs,master)
+	QUIT
+%SQLDelete(%rowid,%check,%tstart=1,%mv=0,%polymorphic=0)
+	// SQL DELETE method for table data.Voiture
+	new bva,ce,%d,dc,%e,%ele,%itm,%key,%l,%nc,omcall,%oper,%pos,%s,sn,sqlcode,subs set %oper="DELETE",sqlcode=0,%ROWID=%rowid,%d(1)=%rowid,%e(1)=%rowid,%l=$c(0)
+	if '$d(%0CacheSQLRA) { new %0CacheSQLRA set omcall=1 }
+	if '$a(%check,2) {
+		new %ls lock +^data.VoitureD(%d(1))#"E":$zu(115,4) set %ls=$s('$t:0,1:$case($SYSTEM.Lock.ReturnCode(),0:1,4:2,2:2,1:3,:""))
+		set:%ls=2 $e(%check,2)=$c(1) set:%ls=2&&($tlevel) %0CacheLock("data.Voiture","E")=1 set:$case(%ls,1:1,2:1,:0) $e(%l)=$c(1)
+		if '%ls||(%ls=3) { set SQLCODE=-110,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer",$s('%ls:"SQLFiler40",1:"SQLFiler55"),,%oper,"data"_"."_"Voiture",$g(%d(1))) RETURN  }
+	}
+	if %tstart { TSTART:($zu(115,1)=1)||('$TLEVEL&&($zu(115,1)=2))  }
+	set $zt="ERRORDelete"
+	do ..%SQLGetOld(%rowid,.%d,.%e,.sqlcode) if sqlcode { set SQLCODE=-106,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler58",,"data"_"."_"Voiture",%rowid) do ..%SQLEExit() QUIT  }
+	if %e(8)'="" { set sn=$p(%e(8),$e(%e(8)),$l(%e(8),$e(%e(8)))-1) if "data.Voiture"'=sn { new %f do ..%SQLCopyIcolIntoName() do $classmethod(sn,"%SQLDelete",%rowid,%check,%tstart,%mv,1) QUIT  }}
+	if '$a(%check),'$zu(115,7) do  if sqlcode set SQLCODE=sqlcode do ..%SQLEExit() QUIT  
+	. new %fk,%k,%p,%st,%t,%z set %k="",%p("%1")="%d(1),",%p("IDKEY")="%d(1),"
+	. for  quit:sqlcode<0  set %k=$o(^rINDEXEXT("F","data.Voiture",%k)) quit:%k=""  set %t="" for  set %t=$o(^rINDEXEXT("F","data.Voiture",%k,"f",%t)) quit:%t=""  set %st=(%t="data.Voiture") set %fk="" for  set %fk=$o(^rINDEXEXT("F","data.Voiture",%k,"f",%t,%fk)) quit:%fk=""  x "set %z=$classmethod(%t,%fk_""SQLFKeyRefAction"",%st,%k,$a(%check,2),"_%p(%k)_")" if %z set sqlcode=-124 quit  
+	set ce="" for  { set ce=$order(^oddSQL("data","Voiture","DC",ce)) quit:ce=""   do $classmethod(ce,"%SQLDeleteChildren",%d(1),%check,.sqlcode) quit:sqlcode<0  } if sqlcode<0 { set SQLCODE=sqlcode do ..%SQLEExit() QUIT } // Delete any children
+	if '$a(%check,3) {
+		set sn(1)=$zu(28,%e(7),7) set sn(2)=%d(1) k ^data.VoitureI("consulterParPlaque",sn(1),sn(2))
+	}
+	k ^data.VoitureD(%d(1))
+	do ..%SQLUnlock() TCOMMIT:%tstart&&($zu(115,1)=1)
+	set SQLCODE=0 kill:$g(omcall) %0CacheSQLRA
+	QUIT
+ERRORDelete	set $zt="",SQLCODE=-415,%msg=$s($g(%msg)'="":%msg_" -- ",1:"")_$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler51",,%oper,"data"_"."_"Voiture",$ze) if $ze["<FRAMESTACK>" { set %msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler52",,$ze,%oper,"data"_"."_"Voiture") do ##Class(%SYS.System).WriteToConsoleLog(%msg) if ($zu(67,10,$j)=1)||($zu(67,10,$j)=3) { write !,%msg h 3 } HALT  } do ..%SQLEExit() QUIT
+	Return
+%SQLDeleteTempStreams()
+	// Delete all temporary streams
+	QUIT
+%SQLEExit()
+	do ..%SQLUnlock() 
+	if %tstart,$zu(115,1)=1,$TLEVEL { set %tstart=0 TROLLBACK 1 } kill:$g(omcall) %0CacheSQLRA QUIT  
+	Return
+%SQLExists(pLockOnly=0,pUnlockRef,%pVal...)
+	// SQL Foreign Key validation entry point for Key %1.  Called by FKeys that reference this Key to see if the row is defined
+	if pLockOnly>=0 { new id set id=%pVal(1) }
+	if pLockOnly>=0 { if '..%SQLGetLock(id,1,.pUnlockRef) { set sqlcode=-114,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler39",,"data"_"."_"Voiture"_":"_"%1") QUIT 0 } }
+	if pLockOnly<1 {
+		new qv set qv=$d(^data.VoitureD(%pVal(1))) QUIT:pLockOnly=-1 qv
+		do:'$g(pUnlockRef) ..%SQLReleaseLock(id,1) quit qv
+	}
+	else { do:'$g(pUnlockRef) ..%SQLReleaseLock(id,1) QUIT 1 }
+	Return
+%SQLGetLock(pRowId,pShared=0,pUnlockRef)
+	QUIT ..%SQLAcquireLock(pRowId,pShared,.pUnlockRef)
+%SQLGetOld(%rowid,%d,%e,sqlcode)
+	new s set %d(1)=%rowid,s="" if '$d(^data.VoitureD(%d(1)),s) { set sqlcode=100 quit  }
+	 S %e(8)=$lg(s),%e(7)=$lg(s,5)
+	QUIT
+%SQLGetOldAll()
+	new s set %d(1)=%rowid,s="" if '$d(^data.VoitureD(%d(1)),s) { set sqlcode=100 quit  }
+	 S $lg(%e(8),%e(4),%e(5),,%e(7),%e(3),%e(6),%e(2))=s
+	QUIT
+%SQLGetOldIndex(%rowid,%d,pF=0,sqlcode)
+	try {
+		new tClass,tF,tOid,tSC
+		set tOid=..%ComposeOid(%rowid)
+		if ''..%OnDetermineClass(tOid,.tClass),tClass'=$classname() {
+			set tF=1 do $classmethod(tClass,"%SQLGetOldIndex",%rowid,,.tF,.sqlcode)
+			set:$d(tF("plaque")) %d(7)=tF("plaque") set:$d(tF("x__classname")) %d(8)=tF("x__classname") 
+			RETURN
+		}
+	}
+	catch { }
+	new s set %d(1)=%rowid,s="" if '$d(^data.VoitureD(%d(1)),s) { set sqlcode=100 quit  }
+	 S %e(8)=$lg(s),%e(7)=$lg(s,5)
+	if pF { set:$d(%d(7)) pF("plaque")=%d(7) set:$d(%d(8)) pF("x__classname")=%d(8)  }
+	set sqlcode=0
+	QUIT
+%SQLInsert(%d,%check,%inssel,%vco,%tstart=1,%mv=0)
+	// SQL INSERT method for table data.Voiture
+	new bva,%ele,%itm,%key,%f,%l,%n,%nc,%oper,%pos,%s,sqlcode,sn,subs,icol set %oper="INSERT",sqlcode=0,%l=$c(0,0,0)
+	if $a(%check,7) { new %diu merge %diu=%d }
+	if $d(%d(1)),'$zu(115,11) { if %d(1)'="" { set SQLCODE=-111,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler6",,"ID","data"_"."_"Voiture") RETURN ""  } kill %d(1) } 
+	if '$a(%check),'..%SQLValidateFields(.sqlcode) { set SQLCODE=sqlcode RETURN "" }
+	do:'$a(%check,8) ..%SQLNormalizeFields()
+	if %tstart { TSTART:($zu(115,1)=1)||('$TLEVEL&&($zu(115,1)=2))  } set $zt="ERRORInsert"
+	if '$a(%check) {
+		do {
+			if $g(%vco)'="" { d @%vco quit:sqlcode<0  }
+		} while 0
+		if sqlcode<0 { set SQLCODE=sqlcode do ..%SQLEExit() RETURN "" }		// A constraint failed
+	}
+	if '$d(%d(1)) { set %d(1)=$i(^data.VoitureD) } elseif %d(1)>$g(^data.VoitureD) { if $i(^data.VoitureD,$zabs(%d(1)-$g(^data.VoitureD))) {}} elseif $d(^data.VoitureD(%d(1))) { set SQLCODE=-119,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler33",,"ID",%d(1),"data"_"."_"Voiture"_"."_"ID") do ..%SQLEExit() RETURN "" }
+	set:'($d(%d(8))#2) %d(8)="" set:'($d(%d(7))#2) %d(7)=""
+	if '$a(%check,2) {
+		new %ls lock +^data.VoitureD(%d(1))#"E":$zu(115,4) set %ls=$s('$t:0,1:$case($SYSTEM.Lock.ReturnCode(),0:1,4:2,2:2,1:3,:""))
+		set:%ls=2 $e(%check,2)=$c(1) set:%ls=2&&($tlevel) %0CacheLock("data.Voiture","E")=1 set:$case(%ls,1:1,2:1,:0) $e(%l)=$c(1)
+		if '%ls||(%ls=3) { set SQLCODE=-110,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer",$s('%ls:"SQLFiler40",1:"SQLFiler55"),,%oper,"data"_"."_"Voiture",$g(%d(1))) do ..%SQLEExit() RETURN ""  }
+	}
+	set ^data.VoitureD(%d(1))=$lb(%d(8),%d(4),%d(5),,%d(7),%d(3),%d(6),%d(2))
+	if '$a(%check,3) {
+		set sn(1)=$zu(28,%d(7),7) set sn(2)=%d(1) set ^data.VoitureI("consulterParPlaque",sn(1),sn(2))=%d(8)
+	}
+	lock:$a(%l) -^data.VoitureD(%d(1))#"E"
+	TCOMMIT:%tstart&&($zu(115,1)=1)
+	set SQLCODE=0
+	QUIT %d(1) 			// %SQLInsert
+ERRORInsert	set $zt="",SQLCODE=-415,%msg=$s($g(%msg)'="":%msg_" -- ",1:"")_$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler51",,%oper,"data"_"."_"Voiture",$ze)
+	if $ze["<FRAMESTACK>" { set %msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler52",,$ze,%oper,"data"_"."_"Voiture") do ##Class(%SYS.System).WriteToConsoleLog(%msg) if ($zu(67,10,$j)=1)||($zu(67,10,$j)=3) { write !,%msg h 3 } HALT  }
+	do ..%SQLEExit()
+	RETURN ""
+%SQLInvalid(pIcol,pVal) public {
+	set:$l($g(pVal))>40 pVal=$e(pVal,1,40)_"..." do:'$d(%n) ..%SQLnBuild() set %msg=$s($g(%msg)'="":%msg_$c(13,10),1:"")_$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler37",,"data"_"."_"Voiture"_"."_$lg(%n,pIcol),$s($g(pVal)'="":$s(pVal="":"<NULL>",pVal=$c(0):"<EMPTY STRING>",1:"'"_pVal_"'"),1:"")),sqlcode=$s(%oper="INSERT":-104,1:-105)
+	QUIT sqlcode }
+%SQLMissing(fname)
+	set sqlcode=-108,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler47",,fname,"data"_"."_"Voiture") quit
+%SQLNormalizeFields()
+	set:$g(%d(6))'="" %d(6)=$select(%d(6)=$c(0)&&$zu(115,13):"",1:%d(6)\1)
+	QUIT
+%SQLPurgeIndices(pIndices="",pLockExtent=0,pIgnoreIndexList="")
+	QUIT ..%PurgeIndices(pIndices,pLockExtent,pIgnoreIndexList)
+%SQLQuickLoad(%rowid,%nolock=0,pkey=0,qq=0)
+	// Get fields from row where SQLRowID=%rowid
+	new d,i,il,subs set:%nolock=2 %nolock=1
+	if %nolock=0 { if '..%SQLAcquireLock(%rowid) { set %qrc=114,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler45",,"data"_"."_"Voiture",%rowid),%ROWCOUNT=0 QUIT  } set:$zu(115,2) il=$zu(115,2,0) }
+	new s,ul set ul=0,d(1)=%rowid if $zu(115,2)=1 { lock +^data.VoitureD(d(1))#"S":$zu(115,4) if $t { set ul=1 } else { set %qrc=114,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler46",,"data"_"."_"Voiture",%rowid),%ROWCOUNT=0 quit  } }
+	if '$d(^data.VoitureD(d(1)),s) { set SQLCODE=100,%qrc=100 if %nolock=0 { do:$g(il) $zu(115,2,il) }} else { set SQLCODE=0
+	if qq { set d(8)=$lg(s) if d(8)'="" { new sn set sn=$p(d(8),$e(d(8)),$l(d(8),$e(d(8)))-1) if "data.Voiture"'=sn { if %nolock=0 { do ..%SQLReleaseLock(%rowid,0,1) do:$g(il) $zu(115,2,il) } kill d set:sn'["." sn="User."_sn do $classmethod(sn,"%SQLQuickLoad",%rowid,%nolock,0,1) QUIT  }}}
+	set d(2)=$lg(s,8) set d(3)=$lg(s,6) set d(4)=$lg(s,2) set d(5)=$lg(s,3) set d(6)=$lg(s,7) set d(7)=$lg(s,5) set d(8)=$lg(s)  }
+	do ..%SQLQuickLogicalToOdbc(.d)
+	if SQLCODE set %ROWCOUNT=0 set:SQLCODE<0 SQLCODE=-SQLCODE lock:ul -^data.VoitureD(d(1))#"SI" set %qrc=SQLCODE QUIT
+	set:qq d=$zobjexport("data.Voiture",18),d=$zobjexport(8,18) set i=-1 for  { set i=$o(d(i)) quit:i=""  set d=$zobjexport(d(i),18) } set %qrc=0,%ROWCOUNT=1 lock:ul -^data.VoitureD(d(1))#"SI" if %nolock=0 { do ..%SQLReleaseLock(%rowid,0,0) do:$g(il) $zu(115,2,il) } QUIT
+	Return
+%SQLReleaseLock(%rowid,s=0,i=0,e="")
+	new %d
+	set:e="" e=1 set %d(1)=%rowid set s=$e("E",e)_$e("S",s)_$e("D",i)
+	lock -^data.VoitureD(%d(1))#s
+	QUIT
+%SQLReleaseTableLock(s=0,i=0)
+	set s=$e("S",s)_$e("D",i) lock -^data.VoitureD#s QUIT 1
+	Return
+%SQLUnlock()
+	lock:$a(%l) -^data.VoitureD(%d(1))#"E"
+	QUIT
+%SQLUnlockError(cname)
+	set sqlcode=-110 if %oper="DELETE" { set %msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler48",,"data"_"."_"Voiture",cname) } else { set %msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler49",,"data"_"."_"Voiture",cname) } quit
+	Return
+%SQLUpdate(%rowid,%check,%d,%vco,%tstart=1,%mv=0,%polymorphic=0,%soid)
+	// SQL UPDATE method for table data.Voiture
+	new %e,bva,%ele,%itm,%key,%f,%l,%n,%nc,%oper,%pos,%s,icol,omcall,s,sn,sqlcode,subs,t set %oper="UPDATE",sqlcode=0,%ROWID=%rowid,$e(%e,1)=$c(0),%l=$c(0,0,0)
+	if '$d(%0CacheSQLRA) { new %0CacheSQLRA set omcall=1 }
+	if '$a(%check),'$a(%check,7),'..%SQLValidateFields(.sqlcode) { set SQLCODE=sqlcode QUIT  }
+	do:'$a(%check,8) ..%SQLNormalizeFields()
+	if $d(%d(1)),%d(1)'=%rowid { set SQLCODE=-107,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler16",,"ID","data"_"."_"Voiture") QUIT  }
+	for icol=2:1:8 { set $e(%e,icol)=$c($d(%d(icol))) }
+	set %d(1)=%rowid,%e(1)=%rowid
+	if '$a(%check,2) {
+		new %ls lock +^data.VoitureD(%d(1))#"E":$zu(115,4) set %ls=$s('$t:0,1:$case($SYSTEM.Lock.ReturnCode(),0:1,4:2,2:2,1:3,:""))
+		set:%ls=2 $e(%check,2)=$c(1) set:%ls=2&&($tlevel) %0CacheLock("data.Voiture","E")=1 set:$case(%ls,1:1,2:1,:0) $e(%l)=$c(1)
+		if '%ls||(%ls=3) { set SQLCODE=-110,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer",$s('%ls:"SQLFiler40",1:"SQLFiler55"),,%oper,"data"_"."_"Voiture",$g(%d(1))) RETURN  }
+	}
+	if %tstart { TSTART:($zu(115,1)=1)||('$TLEVEL&&($zu(115,1)=2))  }
+	set $zt="ERRORUpdate"
+	if $g(%vco)="" { do ..%SQLGetOld(%rowid,.%d,.%e,.sqlcode) i sqlcode { s SQLCODE=-109,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler59",,"data"_"."_"Voiture",%rowid) do ..%SQLEExit() QUIT  } for icol=8,7 { set:'$d(%d(icol)) %d(icol)=%e(icol) set:%d(icol)=%e(icol) $e(%e,icol)=$c(0) }} else { do ..%SQLGetOldAll() if sqlcode { set SQLCODE=-109,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler59",,"data"_"."_"Voiture",%rowid) do ..%SQLEExit() QUIT  } for icol=2,3,4,5,6,7,8 { set:'$d(%d(icol)) %d(icol)=%e(icol) set:%d(icol)=%e(icol) $e(%e,icol)=$c(0) }}
+	if %e(8)'="" set sn=$p(%e(8),$e(%e(8)),$l(%e(8),$e(%e(8)))-1) if "data.Voiture"'=sn new %f do ..%SQLCopyIcolIntoName() do $classmethod(sn,"%SQLUpdate",%rowid,%check,.%d,$g(%vco),%tstart,%mv,1) QUIT
+	if '$a(%check) {
+		do {
+			if $g(%vco)'="" { d @%vco quit:sqlcode<0  }
+		} while 0
+		if sqlcode { set SQLCODE=sqlcode do ..%SQLEExit() QUIT  }
+	}
+	if $s($a(%e,2):1,$a(%e,3):1,$a(%e,4):1,$a(%e,5):1,$a(%e,6):1,$a(%e,7):1,1:$a(%e,8)) {
+		set ^data.VoitureD(%d(1))=$listupdate($g(^data.VoitureD(%d(1))),1,$a(%e,8):%d(8),$a(%e,4):%d(4),$a(%e,5):%d(5),,$a(%e,7):%d(7),$a(%e,3):%d(3),$a(%e,6):%d(6),$a(%e,2):%d(2))
+	}
+	if '$a(%check,3) { 
+		if $a(%e,7)||$a(%e,8) {	// consulterParPlaque index map
+			if $a(%e,7) { set sn(1)=$zu(28,%e(7),7) set sn(2)=%d(1) k ^data.VoitureI("consulterParPlaque",sn(1),sn(2)) }
+			set sn(1)=$zu(28,%d(7),7) set sn(2)=%d(1) set ^data.VoitureI("consulterParPlaque",sn(1),sn(2))=%d(8)
+		}
+	}
+	do ..%SQLUnlock() TCOMMIT:%tstart&&($zu(115,1)=1)
+	set SQLCODE=0 kill:$g(omcall) %0CacheSQLRA
+	QUIT
+ERRORUpdate	set $zt="",SQLCODE=-415,%msg=$s($g(%msg)'="":%msg_" -- ",1:"")_$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler51",,%oper,"data"_"."_"Voiture",$ze) if $ze["<FRAMESTACK>" { set %msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler52",,$ze,%oper,"data"_"."_"Voiture") do ##Class(%SYS.System).WriteToConsoleLog(%msg) if ($zu(67,10,$j)=1)||($zu(67,10,$j)=3) { write !,%msg h 3 } HALT  } do ..%SQLEExit() QUIT  
+	Return
+%SQLValidateCompFields(sqlcode)
+	QUIT 'sqlcode
+%SQLValidateFields(sqlcode)
+	if $g(%d(2))'="",'($$ValidateField2(%d(2))) { set sqlcode=..%SQLInvalid(2+1,%d(2)) } 
+	if $g(%d(7))'="",'($s(($s(%d(7)'=$c(0):$l(%d(7)),1:0)'<9)&&($l(%d(7))'>9):1,$s(%d(7)'=$c(0):$l(%d(7)),1:0)<9:$$Error^%apiOBJ(7202,%d(7),9),1:$$Error^%apiOBJ(7201,%d(7),9))) { set sqlcode=..%SQLInvalid(7+1,%d(7)) } 
+	if $g(%d(6))'="",'($select(%d(6)=$c(0)&&$zu(115,13):1,$isvalidnum(%d(6),0):1,1:$$Error^%apiOBJ(7207,%d(6)))) { set sqlcode=..%SQLInvalid(6+1,%d(6)) } 
+	new %f for %f=3,4,5 { if $g(%d(%f))'="",'(($l(%d(%f))'>50)) set sqlcode=..%SQLInvalid(%f+1,$g(%d(%f))) quit  } 
+	QUIT 'sqlcode
+ValidateField2(%val) {	Q $s(%val'["'"&&("'2 places', 'Cabriolet', 'Berline', 'Monospace', '4x4', '7 places''"[("'"_$select(%val=$c(0):"",1:%val)_"'")):1,1:$$Error^%apiOBJ(7205,%val,"'2 places', 'Cabriolet', 'Berline', 'Monospace', '4x4', '7 places'"))
+}
+	Return
+%SQLnBuild() public {
+	set %n=$lb(,"ID","categorie","couleur","marque","modele","nbPlaces","plaque","x__classname")
+	QUIT }
+%SaveData(id) public {
+	try {
+		set id=$listget(i%"%%OID") if id'="" { set insert=0,idassigned=1 } else { set insert=1,idassigned=0 }
+		set lock=0,lockok=0,tSharedLock=0
+		if 'idassigned { set id=$i(^data.VoitureD) do ..%IdSet(id) set:$g(%objtxSTATUS)=2 %objtxOIDASSIGNED(+$this)="" }
+		set zzc10v1=$zu(28,i%plaque,7,32768)
+		try {
+			set tInnerException = ""
+			;
+			if 'insert {
+				if (i%%Concurrency<4)&&(i%%Concurrency) { lock +(^data.VoitureD(id)#"E"):$zu(115,4) set lockok=$s('$t:0,1:$case($SYSTEM.Lock.ReturnCode(),0:1,2:2,4:2,:0)) set:lockok=2&&($tlevel) %0CacheLock($classname(),"E")=1 if lockok { set lock=1 } else { Throw ##class(%Exception.StatusException).ThrowIfInterrupt($$Error^%apiOBJ(5803,$classname())) } }
+				if ('$Data(^data.VoitureD(id))) {
+					set insert=1
+					if lock { lock -(^data.VoitureD(id)#"E") set (lock,lockok) = 0 }
+				}
+			}
+			if insert {
+				if ('lockok&&..%Concurrency&&$tlevel)||(i%%Concurrency=4) {  lock +(^data.VoitureD(id)#"E"):$zu(115,4) set lockok=$s('$t:0,1:$case($SYSTEM.Lock.ReturnCode(),0:1,2:2,4:2,:0)) set:(lockok=2&&(i%%Concurrency'=4)) %0CacheLock($classname(),"E")=1 set:lockok lock=1 if 'lockok { Throw ##class(%Exception.StatusException).ThrowIfInterrupt($$Error^%apiOBJ(5803,$classname())) } }
+				if i%%Concurrency=3 { lock +(^data.VoitureD(id)#"ES") set tSharedLock=1 }
+				set ^data.VoitureD(id)=$lb("",i%marque,i%modele,,i%plaque,i%couleur,i%nbPlaces,i%categorie)
+				set ^data.VoitureI("consulterParPlaque",zzc10v1,id)=""
+			}
+			else {
+				set zzc31v1=$listget(^data.VoitureD(id),5)
+				if (i%plaque'=zzc31v1) {
+					kill ^data.VoitureI("consulterParPlaque",$zu(28,zzc31v1,7,32768),id)
+					set ^data.VoitureI("consulterParPlaque",zzc10v1,id)=""
+				}
+				set ^data.VoitureD(id)=$lb("",i%marque,i%modele,,i%plaque,i%couleur,i%nbPlaces,i%categorie)
+			}
+			set tStatus = 1
+		}
+		catch tInnerException {
+			if ('idassigned) { Set $zobjoid("",$listget(i%"%%OID"))="",i%"%%OID"="" kill:$g(%objtxSTATUS)=2 %objtxOIDASSIGNED(+$this) }
+			if (tSharedLock) {  lock -(^data.VoitureD(id)#"ES") } elseif (lockok=1)&&(insert)&&(i%%Concurrency=4) {  lock -(^data.VoitureD(id)) }
+		}
+		if lock lock -(^data.VoitureD(id)#"E")
+		if $Isobject(tInnerException) { throw tInnerException }
+	}
+	catch tException {
+		set tStatus = tException.AsStatus()
+	}
+	quit tStatus }
+%SaveDirect(id="",idList="",data,concurrency=-1) public {
+	try {
+		set zzc5v1=$listget(data,5)
+		set zzc5v2=$listget(data,1)
+		if concurrency=-1 { set concurrency=$zu(115,10) }
+		if id'="" { set insert=0,idassigned=1 } else { set insert=1,idassigned=0 }
+		set lock=0,tSharedLock=0
+		if 'idassigned { set id=$i(^data.VoitureD) }
+		set zzc10v1=$zu(28,zzc5v1,7,32768)
+		try {
+			set tInnerException = ""
+			;
+			if 'insert {
+				if concurrency { lock +(^data.VoitureD(id)#"E"):$zu(115,4) set lock=$s('$t:0,1:$case($SYSTEM.Lock.ReturnCode(),0:1,2:2,4:2,:0)) set:lock=2&&($tlevel) %0CacheLock($classname(),"E")=1 if 'lock { Throw ##class(%Exception.StatusException).ThrowIfInterrupt($$Error^%apiOBJ(5803,$classname())) } }
+				if ('$Data(^data.VoitureD(id))) {
+					set insert=1
+					if lock { lock -(^data.VoitureD(id)#"E") set (lock,lockok) = 0 }
+				}
+			}
+			if insert {
+				if concurrency { lock +(^data.VoitureD(id)#"E"):$zu(115,4) set lock=$s('$t:0,1:$case($SYSTEM.Lock.ReturnCode(),0:1,2:2,4:2,:0)) set:lock=2&&($tlevel) %0CacheLock($classname(),"E")=1 if 'lock { Throw ##class(%Exception.StatusException).ThrowIfInterrupt($$Error^%apiOBJ(5803,$classname())) } }
+				set ^data.VoitureD(id)=data
+				set ^data.VoitureI("consulterParPlaque",zzc10v1,id)=zzc5v2
+			}
+			else {
+				set zzc31v1=$lg(idList,1)
+				set zzc31v2=$listget(^data.VoitureD(zzc31v1),5)
+				if (zzc5v1'=zzc31v2) {
+					kill ^data.VoitureI("consulterParPlaque",$zu(28,zzc31v2,7,32768),zzc31v1)
+					set ^data.VoitureI("consulterParPlaque",zzc10v1,id)=zzc5v2
+				}
+				set ^data.VoitureD(id)=data
+			}
+			set tStatus = 1
+		}
+		catch tInnerException {
+		}
+		if lock lock -(^data.VoitureD(id)#"E")
+		if $Isobject(tInnerException) { throw tInnerException }
+	}
+	catch tException {
+		set tStatus = tException.AsStatus()
+	}
+	quit tStatus }
+%SaveIndices(pStartId="",pEndId="",lockExtent=0) public {
+	If lockExtent {
+		Set sc=..%LockExtent(0)
+		Quit:('sc) sc
+	}
+	s id=$order(^data.VoitureD(pStartId),-1),tEndId=$S(pEndId'="":pEndId,1:pStartId)
+BSLoop	s id=$O(^data.VoitureD(id)) g:(id="")||(id]]tEndId) BSLoopDun
+	Set bsv0N1=$Get(^data.VoitureD(id))
+	Set bsv0N2=$zu(28,$listget(bsv0N1,5),7,32768)
+	Set ^data.VoitureI("consulterParPlaque",bsv0N2,id)=$listget(bsv0N1,1)
+	g BSLoop
+BSLoopDun
+	If lockExtent { Do ..%UnlockExtent(0) }
+	Quit 1
+CatchError	Set $ZTrap=""
+	If $ZE'="" {
+		Set sc = $$Error^%apiOBJ(5002,$ZE)
+	}
+	If lockExtent { Do ..%UnlockExtent(0) }
+	Quit sc }
+%SortBegin(idxlist="",excludeunique=0)
+	if $select(idxlist="":1,$listfind(idxlist,"consulterParPlaque"):1,1:0) If $SortBegin(^data.VoitureI("consulterParPlaque"))
+	Quit 1
+%SortEnd(idxlist="",commit=1,excludeunique=0) public {
+	if $select(idxlist="":1,$listfind(idxlist,"consulterParPlaque"):1,1:0) If $SortEnd(^data.VoitureI("consulterParPlaque"),commit)
+	Quit 1 }
+%UnlockExtent(shared=0,immediate=0) public {
+	If 'shared {
+		If 'immediate {
+			Lock -^data.VoitureD
+			 Quit 1
+		}
+		Lock -^data.VoitureD#"I"
+		Quit 1
+	}
+	If 'immediate {
+		Lock -^data.VoitureD#"S"
+		Quit 1
+	}
+	Lock -^data.VoitureD#"SI"
+	Quit 1 }
+%UnlockId(id,shared=0,immediate=0) public {
+	If 'shared {
+		If 'immediate {
+			Lock -(^data.VoitureD(id)#"E")
+			Quit 1
+		}
+		Lock -(^data.VoitureD(id)#"IE")
+		Quit 1
+	}
+	If 'immediate {
+		Lock -(^data.VoitureD(id)#"SE")
+		Quit 1
+	}
+	Lock -(^data.VoitureD(id)#"SIE")
+	Quit 1 }
+%ValidateIndices(idxList="",autoCorrect=0,lockOption=1,multiProcess=1,mapList,verbose=1,errors)
+	if '$listvalid(idxList) { QUIT $$Error^%apiOBJ(5591,"##class(data.Voiture).%ValidateIndices()","idxList",""""" or a $list of index names") }
+	if $case(autoCorrect,1:0,0:0,:1) { QUIT $$Error^%apiOBJ(5591,"##class(data.Voiture).%ValidateIndices()","autoCorrect","'0' or '1'") }
+	if $case(lockOption,2:0,1:0,0:0,:1) { QUIT $$Error^%apiOBJ(5591,"##class(data.Voiture).%ValidateIndices()","lockOption","'0', '1' or '2'") }
+	if $case(multiProcess,1:0,0:0,:1) { QUIT $$Error^%apiOBJ(5591,"##class(data.Voiture).%ValidateIndices()","multiProcess","'0' or '1'") }
+	if $case(verbose,1:0,0:0,:1) { QUIT $$Error^%apiOBJ(5591,"##class(data.Voiture).%ValidateIndices()","verbose","'0' or '1'") }
+	new mapList QUIT $$ValidateIndices^%SYS.SECURITY("data.Voiture",idxList,autoCorrect,lockOption,multiProcess,,verbose,.errors)
+%ValidateObject(unused=0,checkserial=1) public {
+	set sc=1
+	If '$system.CLS.GetModified() Quit sc
+	If m%categorie Set iv=..categorie If iv'="" Set rc=(..categorieIsValid(iv)) If ('rc) Set sc=$$EmbedErr^%occSystem(sc,rc,5802,"categorie",iv)
+	If m%couleur Set iv=..couleur If iv'="" Set rc=(..couleurIsValid(iv)) If ('rc) Set sc=$$EmbedErr^%occSystem(sc,rc,5802,"couleur",iv)
+	If m%marque Set iv=..marque If iv'="" Set rc=(..marqueIsValid(iv)) If ('rc) Set sc=$$EmbedErr^%occSystem(sc,rc,5802,"marque",iv)
+	If m%modele Set iv=..modele If iv'="" Set rc=(..modeleIsValid(iv)) If ('rc) Set sc=$$EmbedErr^%occSystem(sc,rc,5802,"modele",iv)
+	If m%nbPlaces Set iv=..nbPlaces If iv'="" Set rc=(..nbPlacesIsValid(iv)) If ('rc) Set sc=$$EmbedErr^%occSystem(sc,rc,5802,"nbPlaces",iv)
+	If m%plaque Set iv=..plaque If iv'="" Set rc=(..plaqueIsValid(iv)) If ('rc) Set sc=$$EmbedErr^%occSystem(sc,rc,5802,"plaque",iv)
+	Quit sc }
+zcategorieGetStored(id) public {
+	Quit $Select(id'="":$listget($g(^data.VoitureD(id)),8),1:"") }
+zcategorieIsValid(%val) public {
+	Q $s(%val'["'"&&("'2 places', 'Cabriolet', 'Berline', 'Monospace', '4x4', '7 places''"[("'"_$select(%val=$c(0):"",1:%val)_"'")):1,1:$$Error^%apiOBJ(7205,%val,"'2 places', 'Cabriolet', 'Berline', 'Monospace', '4x4', '7 places'")) }
+zcouleurGetStored(id) public {
+	Quit $Select(id'="":$listget($g(^data.VoitureD(id)),6),1:"") }
+zmarqueGetStored(id) public {
+	Quit $Select(id'="":$listget($g(^data.VoitureD(id)),2),1:"") }
+zmodeleGetStored(id) public {
+	Quit $Select(id'="":$listget($g(^data.VoitureD(id)),3),1:"") }
+znbPlacesDisplayToLogical(%val) public {
+	Q $select(%val="":"",%val=$c(0)&&$zu(115,13):"",1:$s($in(%val,"","")'="":+$in(%val,"",%val),1:%val)) }
+znbPlacesGetStored(id) public {
+	Quit $Select(id'="":$listget($g(^data.VoitureD(id)),7),1:"") }
+znbPlacesIsValid(%val) public {
+	Quit $select(%val=$c(0)&&$zu(115,13):1,$isvalidnum(%val,0):1,1:$$Error^%apiOBJ(7207,%val)) }
+znbPlacesNormalize(%val) public {
+	Quit $select(%val=$c(0)&&$zu(115,13):"",1:%val\1) }
+znbPlacesXSDToLogical(%val) public {
+	Q $s($tr(%val,"Ee(),.")'=%val:"",1:$number(%val,"I")) }
+zplaqueGetStored(id) public {
+	Quit $Select(id'="":$listget($g(^data.VoitureD(id)),5),1:"") }
+zplaqueIsValid(%val) public {
+	Q $s(($s(%val'=$c(0):$l(%val),1:0)'<9)&&($l(%val)'>9):1,$s(%val'=$c(0):$l(%val),1:0)<9:$$Error^%apiOBJ(7202,%val,9),1:$$Error^%apiOBJ(7201,%val,9)) }
+zExtentClose(%qHandle) [ SQLCODE ] public {
+	New SQLCODE Set SQLCODE=0
+	Do:$isobject($get(%qHandle)) %qHandle.%Destruct() Kill %qHandle
+	If SQLCODE { Set:$isobject($g(%sqlcontext)) %sqlcontext.%SQLCODE=SQLCODE,%sqlcontext.%Message=$g(%msg) Set sc=$$Error^%apiOBJ(5540,SQLCODE,$get(%msg)) } Else { Set sc=1 }
+	Quit sc }
+zExtentExecute(%qHandle) [ SQLCODE ] public { New %ROWCOUNT,%ROWID,%msg,SQLCODE 
+	Set sc=1
+	 ;---&sql(DECLARE QExtent CURSOR FOR
+ 	 ;---		 SELECT ID FROM data.Voiture)
+ 	 ;--- ** SQL PUBLIC Variables: SQLCODE
+	 
+	 ;---&sql(OPEN QExtent)
+	try { if $g(%qHandle)'="" { s SQLCODE=-101 } else { s %qHandle=$classmethod("%sqlcq."_$tr($namespace,"%_-$@:/\[]^ ","pudsssssssss")_".xEfCHkaGYmRPaVm7LgcX1H44rmL2","%New") if '$isobject(%qHandle) { s %qHandle=$$%0dsqlD() } } } catch { if $ze["<CLASS DOES NOT EXIST>"&&($ze["%sqlcq."_$tr($namespace,"%_-$@:/\[]^ ","pudsssssssss")_".xEfCHkaGYmRPaVm7LgcX1H44rmL2")||($ze["<ZSQLU>") { s %qHandle=$$%0dsqlD() } else { throw } }
+	If SQLCODE { Set:$isobject($g(%sqlcontext)) %sqlcontext.%SQLCODE=SQLCODE,%sqlcontext.%Message=$g(%msg) Set sc=$$Error^%apiOBJ(5821,"SQLCODE = "_SQLCODE) } Else { Set sc=1 }
+	Quit sc }
+zExtentFetch(%qHandle,Row,AtEnd=0) [ SQLCODE ] public { New %ROWCOUNT,%ROWID,%msg,SQLCODE 
+	Set Row="",AtEnd=0
+	 ;---&sql(FETCH QExtent INTO :c1)
+ 	 ;--- ** SQL PUBLIC Variables: %ROWCOUNT, %ROWID, %msg, SQLCODE
+	if $isobject($g(%qHandle))'=1 { s SQLCODE=-102 } else { do %qHandle.FET() s c1=%qHandle.sqlcol1 }
+	If 'SQLCODE { Set Row=$lb(c1) Set sc=1 }
+	ElseIf SQLCODE=100 { Set AtEnd=1,sc=1 Set:$isobject($g(%sqlcontext)) %sqlcontext.%SQLCODE=SQLCODE,%sqlcontext.%ROWCOUNT=$g(%ROWCOUNT) }
+	Else { Set:$isobject($g(%sqlcontext)) %sqlcontext.%SQLCODE=SQLCODE,%sqlcontext.Message=$g(%msg) Set AtEnd=1,sc=$$Error^%apiOBJ(5540,SQLCODE,$get(%msg)) }
+	QUIT sc }
+zExtentFetchRows(%qHandle,FetchCount=0,RowSet,ReturnCount,AtEnd) [ SQLCODE ] public { New %ROWCOUNT,%ROWID,%msg,SQLCODE 
+	Set RowSet="",ReturnCount=0,AtEnd=0
+	For {
+		 ;---&sql(FETCH QExtent INTO :c1)
+ 		 ;--- ** SQL PUBLIC Variables: %ROWCOUNT, %ROWID, %msg, SQLCODE
+		if $isobject($g(%qHandle))'=1 { s SQLCODE=-102 } else { do %qHandle.FET() s c1=%qHandle.sqlcol1 }
+		If 'SQLCODE { Set RowSet=RowSet_$lb(c1),ReturnCount=ReturnCount+1 Quit:(ReturnCount=FetchCount)||(($l(RowSet)+($l(RowSet)\ReturnCount))>30000) } Else { Set AtEnd=1 Quit }
+	}
+	If 'SQLCODE { Set sc=1 } ElseIf SQLCODE=100 { Set sc=1 Set:$isobject($g(%sqlcontext)) %sqlcontext.%SQLCODE=SQLCODE,%sqlcontext.%ROWCOUNT=$g(%ROWCOUNT) } Else { Set:$isobject($g(%sqlcontext)) %sqlcontext.%SQLCODE=SQLCODE,%sqlcontext.Message=$g(%msg) Set sc=$$Error^%apiOBJ(5540,SQLCODE,$get(%msg)) }
+	Quit sc }
+zExtentSendODBC(%qHandle,array,qacn,%qrc,piece,ColumnCount) [ SQLCODE ] public { New %ROWCOUNT,%ROWID,%msg,SQLCODE 
+	set %qrc=0,piece=0
+	for {
+		set rc=..ExtentFetch(.%qHandle,.row,.atend)
+		if ('rc) { set %qrc=-400 set:$isobject($get(%sqlcontext)) %sqlcontext.SQLCode=-400,%sqlcontext.Message=$g(%msg) do ProcessError^%ourProcedure(rc,$get(%sqlcontext),.%qrc,.%msg),Logerr^%SYS.SQLSRV(%qrc,"","SP",.%msg) RETURN  }
+		if row="" { set %qrc=100 set:$isobject($get(%sqlcontext)) %sqlcontext.SQLCode=100 RETURN  }
+		RETURN:$zobjexport(row,60)
+	}
+	RETURN }
+ q
+%0dsqlD()	n %xxsql,%xxoref
+	s %xxsql("S",1)="DECLARE QExtent CURSOR FOR SELECT ID "
+	s %xxsql("S",2)="INTO  :i%sqlcol1"
+	s %xxsql("S",3)="FROM data . Voiture"
+	s %xxsql("M","%occSqlfuncinc")=$c(1),%xxsql("I","%PVA")="",%xxsql("I","%callout")="",%xxsql("I","%jsonMap")="",%xxsql("I","%occSqlfunc")=""
+	s %xxsql("I","%systemInclude")="",%xxsql("NS")="COMMANDE",%xxsql("PToolsCTI")=$LB(,"-1:0:0::0:1")
+	s %xxoref=$$BuildQuery^%SYS.SQLSRV(.%xxsql,$lb("Runtime","","","data",0,"",),",1,QExtent,","data.Voiture.CLS",1)
+	q %xxoref
+zExtentFunc() public {
+	try {
+		set tSchemaPath = ##class(%SQL.Statement).%ClassPath($classname())
+			set tStatement = ##class(%SQL.Statement).%New(,tSchemaPath)
+			do tStatement.prepare(" SELECT ID FROM data . Voiture")
+		set tResult = tStatement.%Execute()
+	}
+	catch tException { if '$Isobject($Get(tResult)) { set tResult = ##class(%SQL.StatementResult).%New() } set tResult.%SQLCODE=tException.AsSQLCODE(),tResult.%Message=tException.AsSQLMessage() }
+	Quit tResult }
+zExtentGetInfo(colinfo,parminfo,idinfo,%qHandle,extoption=0,extinfo) public {
+ s parminfo=""
+	s:'($d(^oddCOM($classname(),"q","Extent",21),clientinfo)#2)&&'$s($d(^(2),clientinfo)#2&&(clientinfo'=$classname()):$d(^oddCOM(clientinfo,"q","Extent",21),clientinfo)#2||($d(^oddDEF(clientinfo,"q","Extent",21),clientinfo)#2),1:$d(^oddDEF($classname(),"q","Extent",21),clientinfo)#2) clientinfo=""
+	Set:extoption extinfo=$s($d(^oddCOM($classname(),"q","Extent",38))#2:^(38),$d(^oddCOM($g(^(2),$classname()),"q","Extent",38))#2:^(38),1:$s($d(^oddDEF($g(^oddCOM($classname(),"q","Extent",2),$classname()),"q","Extent",38))#2:^(38),1:""))
+	If clientinfo'="" Set colinfo=$listget(clientinfo,1),parminfo=$listget(clientinfo,2),idinfo=$listget(clientinfo,3) Quit 1
+	Set colinfo="",parminfo="",idinfo=$listbuild(0)
+	Set sc=$$externaltype^%apiOLE("%Library.Integer",.exttypes,"0")
+	Quit:('sc) sc
+	s:'($d(^oddCOM($classname(),"q","Extent",23),names)#2)&&'$s($d(^(2),names)#2&&(names'=$classname()):$d(^oddCOM(names,"q","Extent",23),names)#2||($d(^oddDEF(names,"q","Extent",23),names)#2),1:$d(^oddDEF($classname(),"q","Extent",23),names)#2) names=""
+	s:'($d(^oddCOM($classname(),"q","Extent",22),captions)#2)&&'$s($d(^(2),captions)#2&&(captions'=$classname()):$d(^oddCOM(captions,"q","Extent",22),captions)#2||($d(^oddDEF(captions,"q","Extent",22),captions)#2),1:$d(^oddDEF($classname(),"q","Extent",22),captions)#2) captions=""
+	For i=1:1:1 Set colinfo=colinfo_$listbuild($listbuild($listget(names,i),$piece(exttypes,",",i),$listget(captions,i)))
+	Set idinfo=$listbuild(1,$classname())
+	s ^oddCOM($classname(),"q","Extent",21)=$listbuild(colinfo,parminfo,idinfo)
+	Quit 1 }
+zExtentGetODBCInfo(colinfo,parminfo,qHandle) public {
+	Set metadata=$lb(1,1,"ID",4,10,0,2,"ID","Voiture","data","",$c(0,0,0,0,0,0,0,0,0,0,0,1,0),0)
+	Set colcount=$li(metadata,2),cmdlen=colcount*10,parmcount=$li(metadata,3+cmdlen),pmdlen=parmcount*6,parminfo=$li(metadata,cmdlen+3,cmdlen+pmdlen+3)
+	Set colinfo=$li(metadata,2,2+cmdlen)
+	Quit 1 }
+zIDKEYCheck(K1,lockonly=0,concurrency=-1) public {
+	s id=K1,exists=..%ExistsId(id) q:'exists $s('lockonly:$$Error^%apiOBJ(5797,$classname(),"IDKEY",id),1:1) s:concurrency=-1 concurrency=$select(..#DEFAULTCONCURRENCY="$zu(115,10)":$zu(115,10),1:$xecute("q "_..#DEFAULTCONCURRENCY)) if concurrency { s status=..%LockId(id,1) q:('status) status } if 'lockonly { s exists=..%ExistsId(id) d:concurrency ..%UnlockId(id,1,0) quit $s('exists:$$Error^%apiOBJ(5797,$classname(),"IDKEY",id),1:1) } else { d:concurrency ..%UnlockId(id,1,0) q 1 }
+}
+zIDKEYDelete(K1,concurrency=-1) public {
+	Quit ..%DeleteId(.K1,concurrency) }
+zIDKEYExists(K1,id="") public {
+	s id=K1 q ..%ExistsId(K1) }
+zIDKEYOpen(K1,concurrency=-1,sc) public { s:'($d(sc)#2) sc=1
+	Quit ..%OpenId(.K1,concurrency,.sc) }
+zIDKEYSQLCheckUnique(pFromOrig=0,%pID,%pVals...)
+ QUIT $$Error^%apiOBJ(5758,"%Persistent::IDKEYSQLCheckUnique")
+zIDKEYSQLExists(pLockOnly=0,pUnlockRef,%pVal...)
+	// SQL Foreign Key validation entry point for Key IDKEY.  Called by FKeys that reference this Key to see if the row is defined
+	if pLockOnly>=0 { new id set id=%pVal(1) }
+	if pLockOnly>=0 { if '..%SQLGetLock(id,1,.pUnlockRef) { set sqlcode=-114,%msg=$$FormatMessage^%occMessages(,"%SQL.Filer","SQLFiler39",,"data"_"."_"Voiture"_":"_"IDKEY") QUIT 0 } }
+	if pLockOnly<1 {
+		new qv set qv=$d(^data.VoitureD(%pVal(1))) QUIT:pLockOnly=-1 qv
+		do:'$g(pUnlockRef) ..%SQLReleaseLock(id,1) quit qv
+	}
+	else { do:'$g(pUnlockRef) ..%SQLReleaseLock(id,1) QUIT 1 }
+	Return
+zIDKEYSQLFindPKeyByConstraint(%con)
+ QUIT $$Error^%apiOBJ(5758,"%Persistent::IDKEYSQLFindPKeyByConstraint")
+zIDKEYSQLFindRowIDByConstraint(%con,pInternal=0)
+ QUIT $$Error^%apiOBJ(5758,"%Persistent::IDKEYSQLFindRowIDByConstraint")
+zconsulterParPlaqueExists(K1,id="") [ K1,SQLCODE,id ] public { New SQLCODE 
+	 ;---&sql(SELECT %ID INTO :id FROM data.Voiture WHERE (:K1 is not null and plaque = :K1) OR (:K1 IS NULL AND plaque IS NULL))
+ 	 ;--- ** SQL PUBLIC Variables: K1, SQLCODE, id
+	try { d $classmethod("%sqlcq."_$tr($namespace,"%_-$@:/\[]^ ","pudsssssssss")_".xEs4QqgzUgziJzWZ4ddnU0ye6xyC","%New") } catch { if $ze["<CLASS DOES NOT EXIST>"&&($ze["%sqlcq."_$tr($namespace,"%_-$@:/\[]^ ","pudsssssssss")_".xEs4QqgzUgziJzWZ4ddnU0ye6xyC")||($ze["<ZSQLU>") { d %0dsqlH } else { throw } }
+	Quit $select('SQLCODE:1,1:0) }
+ q
+%0dsqlH	n %xxsql
+	s %xxsql("S",1)="SELECT %ID INTO :id FROM data . Voiture WHERE ( :K1 IS NOT NULL AND plaque = :K1 ) OR ( :K1 IS NULL AND plaque IS NULL )"
+	s %xxsql("M","%occSqlfuncinc")=$c(1),%xxsql("I","%PVA")="",%xxsql("I","%callout")="",%xxsql("I","%jsonMap")="",%xxsql("I","%occSqlfunc")=""
+	s %xxsql("I","%systemInclude")="",%xxsql("NS")="COMMANDE",%xxsql("PToolsCTI")=$LB(,"-1:0:0::0:1")
+	d BuildQuery^%SYS.SQLSRV(.%xxsql,$lb("Logical","","","data",0,"",),,"data.Voiture.CLS")
+	i $g(SQLCODE) s id=""
+	q
+%sqllistUCQ(t) public	{
+	s t("%0dsqlA")="",t("%0dsqlD")="",t("%0dsqlH")=""
+}

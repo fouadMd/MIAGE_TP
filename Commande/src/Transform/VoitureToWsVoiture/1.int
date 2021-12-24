@@ -1,0 +1,56 @@
+ROUTINE Transform.VoitureToWsVoiture.1 [Type=INT,Generated]
+ ;Transform.VoitureToWsVoiture.1
+ ;Generated for class Transform.VoitureToWsVoiture.  Do NOT edit. 11/14/2021 06:58:17PM
+ ;;66654A64;Transform.VoitureToWsVoiture
+ ;
+zGetSourceType() public {
+ Quit "data.Voiture" }
+zGetTargetType(pCreate) public {
+ Set pCreate="new"
+ Quit "webObjet.wsVoiture" }
+zTransform(source,target,aux="") [ process,context ] public {
+	Set (tSC,tSCTrans)=1
+	Try {
+		Set target = ##class(webObjet.wsVoiture).%New()
+		If '$IsObject(target) Set tSC=%objlasterror Quit
+		Do:$S($D(%Ensemble("DoTrace")):%Ensemble("DoTrace"),1:##class(Ens.Util.Trace).DoTrace()) ##class(Ens.Util.Trace).WriteTrace("xform",$classname(),"Transform","transform from source "_source_$S(source.%Extends("%Persistent"):"/"_source.%Id(),1:"")_" to target "_target_$S(target.%Extends("%Persistent"):"/"_target.%Id(),1:"")_"")
+		Set tIgnore = 0
+		Try { Set zVALz=source.marque, zVALz=$S($IsObject(zVALz):zVALz.%ConstructClone(), 1:zVALz) }
+		Catch ex { If (..#IGNOREMISSINGSOURCE&&($$GetOneStatusText^%apiOBJ(ex.AsStatus())["<INVALID OREF>")) { Set tIgnore=1 } Else { Set tSC=ex.AsStatus() } }
+		If ('tSC) Quit
+		If 'tIgnore { Set target.marque=zVALz }
+		Set tIgnore = 0
+		Try { Set zVALz=source.modele, zVALz=$S($IsObject(zVALz):zVALz.%ConstructClone(), 1:zVALz) }
+		Catch ex { If (..#IGNOREMISSINGSOURCE&&($$GetOneStatusText^%apiOBJ(ex.AsStatus())["<INVALID OREF>")) { Set tIgnore=1 } Else { Set tSC=ex.AsStatus() } }
+		If ('tSC) Quit
+		If 'tIgnore { Set target.modele=zVALz }
+		Set tIgnore = 0
+		Try { Set zVALz=source.categorie, zVALz=$S($IsObject(zVALz):zVALz.%ConstructClone(), 1:zVALz) }
+		Catch ex { If (..#IGNOREMISSINGSOURCE&&($$GetOneStatusText^%apiOBJ(ex.AsStatus())["<INVALID OREF>")) { Set tIgnore=1 } Else { Set tSC=ex.AsStatus() } }
+		If ('tSC) Quit
+		If 'tIgnore { Set target.categorie=zVALz }
+		Set tIgnore = 0
+		Try { Set zVALz=source.plaque, zVALz=$S($IsObject(zVALz):zVALz.%ConstructClone(), 1:zVALz) }
+		Catch ex { If (..#IGNOREMISSINGSOURCE&&($$GetOneStatusText^%apiOBJ(ex.AsStatus())["<INVALID OREF>")) { Set tIgnore=1 } Else { Set tSC=ex.AsStatus() } }
+		If ('tSC) Quit
+		If 'tIgnore { Set target.plaque=zVALz }
+		Set tIgnore = 0
+		Try { Set zVALz=source.couleur, zVALz=$S($IsObject(zVALz):zVALz.%ConstructClone(), 1:zVALz) }
+		Catch ex { If (..#IGNOREMISSINGSOURCE&&($$GetOneStatusText^%apiOBJ(ex.AsStatus())["<INVALID OREF>")) { Set tIgnore=1 } Else { Set tSC=ex.AsStatus() } }
+		If ('tSC) Quit
+		If 'tIgnore { Set target.couleur=zVALz }
+		Set tIgnore = 0
+		Try { Set zVALz=source.nbPlaces, zVALz=$S($IsObject(zVALz):zVALz.%ConstructClone(), 1:zVALz) }
+		Catch ex { If (..#IGNOREMISSINGSOURCE&&($$GetOneStatusText^%apiOBJ(ex.AsStatus())["<INVALID OREF>")) { Set tIgnore=1 } Else { Set tSC=ex.AsStatus() } }
+		If ('tSC) Quit
+		If 'tIgnore { Set target.nbPlaces=zVALz }
+	} Catch thrownErr {
+		If $ZE="" {
+			Set tSC=thrownErr.AsStatus()
+			Do ##class(Ens.Util.Log).LogStatus($classname(),"Transform",tSC)
+		} Else {
+			Set tSC=##class(Ens.Util.Error).EnsSystemError($classname(),"Transform")
+		}
+	}
+	If ('tSCTrans) Do ##class(Ens.Util.Log).LogStatus($classname(),"Transform",tSCTrans)  Quit:(''tSC) tSCTrans
+	Quit tSC }
